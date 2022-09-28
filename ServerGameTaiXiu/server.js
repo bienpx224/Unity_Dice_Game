@@ -52,13 +52,17 @@ function createNewRound() {
 function roundCounter(roundNumber) {
     Round.findOne({ roundNumber }, (e, round) => {
         if (!e && round != null) {
-            if (round.counter < 10) {
+            if (round.counter <= 10) {
                 round.counter++;
                 round.small_money += Math.floor(Math.random() * 3000)
                 round.big_money += Math.floor(Math.random() * 3000)
                 console.log(`Current round : ${currentRoundNumber} , count : ${round.counter}`)
-                round.save((eSave) => {
-                    
+                
+                
+                round.save((error, eSave) => {
+                    response.message = `RoundCounter${roundNumber}`
+                    response.data = eSave
+                    wss.broadcast(JSON.stringify(response))    
                     setTimeout(() => {
                         roundCounter(roundNumber);
                     }, 1000)
@@ -70,8 +74,12 @@ function roundCounter(roundNumber) {
                 } else {
                     round.dice = Math.floor(Math.random() * 3) + 4;
                 }
-                round.save((eSave) => {
+                round.save((error,eSave) => {
                     console.log("Winner is : " + round.result)
+                    response.message = `RoundCounter${roundNumber}`
+                    response.data = eSave
+                    wss.broadcast(JSON.stringify(response)) 
+
                     setTimeout(() => {
                         createNewRound()
                     }, 1000)

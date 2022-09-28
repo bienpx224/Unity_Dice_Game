@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
+using System;
 
 public class WS_Client : MonoBehaviour
 {
@@ -10,15 +11,25 @@ public class WS_Client : MonoBehaviour
     void Start()
     {
         ws = new WebSocket("ws://localhost:3000");
-        ws.OnMessage += (sender, e) =>
+        ws.OnMessage += OnMessage;
+        ws.Connect();
+    }
+
+    void OnMessage(object sender, MessageEventArgs e)
+    {
+        try
         {
-            Debug.Log(e.Data);
             Debug.Log("Message received from " + ((WebSocket)sender).Url + " , Data : " + e.Data);
             JSONObject data = new JSONObject(e.Data);
             Debug.Log(data);
-            Debug.Log(string.Format("Message : {0}",data["message"].str));
-        };
-        ws.Connect();
+            Debug.Log(string.Format("Message Counter : {0}", data["data"]));
+
+            GameManager.Instance.OnNewData(data["data"]);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning("Exception : " + exception.ToString());
+        }
     }
 
     // Update is called once per frame
@@ -28,7 +39,12 @@ public class WS_Client : MonoBehaviour
             return;
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ws.Send("Hello");
+            int rd = (int) GameManager.Instance.GetRandomNumberInRange(1, 6);
+            Debug.LogError("Random number: " + rd);
         }
+    }
+    private void OnDestroy()
+    {
+        ws.OnMessage -= OnMessage;
     }
 }

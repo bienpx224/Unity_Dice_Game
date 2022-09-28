@@ -6,6 +6,7 @@
 - Unity : Thực hiện kết nối và lắng nghe tín hiệu socket từ server. Thiết kế UI và logic để vận hành quá trình chơi game.
 - Link cài package Nuget cho Unity : https://github.com/bienpx224/NuGetForUnity 
 - Link cài Web Socket Sharp : https://www.youtube.com/watch?v=13HnJPstnDM
+- Random number : ```return Random.Range(0, maxNumber) + minNumber;```
 ## Lưu ý : 
 - Do phía Unity nếu để sử dụng package best http2 để kết nối socketio đồng bộ với socketio như trên server thì tốn kém vì package best http2 tốt nhưng mất tiền để mua =))) sau vào dự án thì hẵng mua.
 => Hiện tại đang sử dụng websocket thuần để kết nối và lắng nghe message từ server, cũng như bắn tín hiệu lên server. Vì websocket là thuần nên việc code khá là tù, ko có channel, emit, bắn event tới các client lắng nghe cụ thể rõ ràng hơn. Vậy nên đã phải tự viết 1 số function để bắn nhận tín hiệu và truyền data là convert sang string để endpoint đọc dữ liệu và dựa vào đó để sử lý. 
